@@ -11,7 +11,8 @@ contract CampaignFactory {
         uint minimum,
         uint target,
         uint deadline
-    ) public {
+    ) 
+    public {
         Campaign campaign = new Campaign(campaignName, campaignDescription, minimum, target, deadline, msg.sender);
         campaigns.push(address(campaign));
     }
