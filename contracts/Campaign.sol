@@ -3,79 +3,59 @@ pragma solidity >=0.4.22 <0.9.0;
 
 contract Campaign {
     struct Request {
-        uint amount;
+        uint256 amount;
         string description;
         address payable recipient;
         bool isCompleted;
-        uint approvalsCount;
+        uint256 approvalsCount;
         mapping(address => bool) approvals;
     }
 
-    string public name;
-    string public description;
     address public manager;
-    uint public minimumContribution;
-    uint public targetContribution;
-    uint public deadline;
+    uint256 public minimumContribution;
+    // Request[] public requests;
+    uint256 approversCount;
+    mapping(address => bool) approvers;
 
-    address[] public approverAddresses;
-    uint public approversCount;
-    mapping(address => uint) public approvers;
-    uint public requestIndex;
-    mapping(uint => Request) public requests;
+    uint256 requestsCount;
+    mapping(uint256 => Request) requests;
 
     modifier onlyManager() {
-        require(msg.sender == manager, 'Sender not authorized.');
+        require(msg.sender == manager, "Sender not authorized.");
         _;
     }
 
-    constructor(
-        string memory campaignName,
-        string memory campaignDescription,
-        uint minimum,
-        uint target,
-        uint deadlineDate,
-        address creator
-    ) public {
-        name = campaignName;
-        description = campaignDescription;
+    constructor(uint256 minimum, address creator) public {
         minimumContribution = minimum;
-        targetContribution = target;
-        deadline = deadlineDate;
         manager = creator;
-        approversCount = 0;
-        requestIndex = 0;
     }
 
-    function contribution () public payable {
-        require(msg.value > minimumContribution, '');
+    function contribute() public payable {
+        require(msg.value > minimumContribution, "");
 
-        if (approvers[msg.sender] == 0) {
-            approvers[msg.sender] = msg.value;
-            approverAddresses.push(msg.sender);
+        if (approvers[msg.sender] != true) {
+            approvers[msg.sender] = true;
             approversCount++;
         }
     }
 
-    function fallback() external payable{}
-
     function createRequest(
-        uint amount,
-        string memory des,
+        uint256 amount,
+        string memory description,
         address payable recipient
     ) public onlyManager {
-        Request storage newRequest = requests[requestIndex++];
+        Request storage newRequest = requests[requestsCount++];
         newRequest.amount = amount;
-        newRequest.description = des;
+        newRequest.description = description;
         newRequest.recipient = recipient;
         newRequest.isCompleted = false;
         newRequest.approvalsCount = 0;
     }
 
-    function approveRequest(uint index) public {
+    function approveRequest(uint256 index) public {
         Request storage request = requests[index];
 
-        require(approvers[msg.sender] > 0);
+        require(approvers[msg.sender]);
         require(!request.approvals[msg.sender]);
         require(!request.isCompleted);
 
@@ -83,7 +63,7 @@ contract Campaign {
         request.approvalsCount++;
     }
 
-    function finalizeRequest(uint index) public onlyManager {
+    function finalizeRequest(uint256 index) public onlyManager {
         Request storage request = requests[index];
 
         require(request.approvalsCount > (approversCount / 2));
@@ -93,38 +73,21 @@ contract Campaign {
         request.isCompleted = true;
     }
 
-    function getIsApprovedRequest(uint index) public view returns (bool) {
-        Request storage request = requests[index];
-        return request.approvals[msg.sender];
-    }
-
-    function getApproverAddresses() public view returns (address[] memory) {
-        return approverAddresses;
-    }
-
     function getSummary()
         public
         view
         returns (
-            string memory,
-            string memory,
-            uint,
-            uint,
-            uint,
-            uint,
-            uint,
-            uint,
+            uint256,
+            uint256,
+            uint256,
+            uint256,
             address
         )
     {
         return (
-            name,
-            description,
             minimumContribution,
-            targetContribution,
-            deadline,
             address(this).balance,
-            requestIndex,
+            requestsCount + 1,
             approversCount,
             manager
         );
