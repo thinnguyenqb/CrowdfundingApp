@@ -1,8 +1,8 @@
 import NavBar from '../components/NavBar';
 import Hero from '../components/Hero';
 import Footer from '../components/Footer';
-import Card from '../components/Card';
 import CardSlider from '../components/CardSlider';
+import Layout from '../components/Layout';
 
 export default function Home() {
     // useEffect(() => {
@@ -10,11 +10,9 @@ export default function Home() {
     // }, []);
 
     return (
-        <div>
-            <NavBar />
+        <Layout>
             <Hero />
             <CardSlider />
-            <Footer />
-        </div>
+        </Layout>
     );
 }
