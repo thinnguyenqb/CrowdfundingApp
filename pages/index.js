@@ -19,13 +19,11 @@ export default function Home() {
             console.log(balance);
 
             // Address of contract
-            const campaignAddress = await campaignFactory('0xb0876683588bf331AeAdBac5F4bC995837c86146')
-                .methods.getCampaigns()
-                .call();
+            const campaignAddress = await campaign('0xcfb58aa8287fEe4Be63CE3672c28B24141253fe4')
             console.log(campaignAddress);
-            // const cp = await campaign(campaignAddress[0]).methods.getSummary().call();
-            const cp = await campaignAddress.map(async (add) => await campaign(add).methods.getSumary().call());
-            console.log(cp);
+            // // const cp = await campaign(campaignAddress[0]).methods.getSummary().call();
+            // const cp = await campaignAddress.map(async (add) => await campaign(add).methods.getSumary().call());
+            // console.log(cp);
         }
 
         getData();
