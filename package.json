@@ -9,12 +9,18 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@chakra-ui/form-control": "^2.0.2",
     "@chakra-ui/icons": "^2.0.2",
+    "@chakra-ui/modal": "^2.0.3",
+    "@chakra-ui/number-input": "^2.0.2",
     "@chakra-ui/react": "^2.2.1",
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
     "@fontsource/space-grotesk": "^4.3.0",
+    "axios": "^0.27.2",
+    "dayjs": "^1.11.3",
     "dotenv": "^16.0.1",
+    "ethereumjs-util": "^7.1.5",
     "framer-motion": "^6.3.16",
     "fs-extra": "^10.1.0",
     "mocha": "^10.0.0",
@@ -22,12 +28,25 @@
     "node-fetch": "^3.2.6",
     "react": "18.1.0",
     "react-confetti": "^6.1.0",
+    "react-datepicker": "^4.8.0",
     "react-dom": "^18.1.0",
+    "react-hook-form": "^7.33.1",
     "react-icons": "^4.4.0",
     "react-slick": "^0.29.0",
     "react-use": "^17.4.0",
     "slick-carousel": "^1.8.1",
+    "solc": "^0.8.15",
     "url-loader": "^4.1.1",
+    "use-wallet": "0.8.1",
     "web3": "^1.7.3"
+  },
+  "devDependencies": {
+    "eslint": "^7.32.0 || ^8.2.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-react": "^7.28.0",
+    "eslint-plugin-react-hooks": "^4.3.0",
+    "webpack": "^5.73.0"
   }
 }

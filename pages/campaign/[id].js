@@ -8,7 +8,7 @@ import SupportersCard from '../../components/SupportersCard';
 export default function Campaign() {
     return (
         <Layout>
-            <Container maxW="container.xl" py={8}>
+            <Container maxW="container.xl" py={8} mt={20}>
                 <Stack spacing={8}>
                     <Heading textAlign="center">Lorem ipsum dolor sit amet</Heading>
 
