@@ -32,12 +32,14 @@ export default function CampaignDetail({
                         <Box flex={7}>
                             <CampaignTab
                                 id={id}
+                                campaignId={id}
                                 description={description}
                                 minimumContribution={minimumContribution}
                                 ETHPrice={ETHPrice}
                                 requestsCount={requestsCount}
                                 approversCount={approversCount}
                                 manager={manager}
+                                name={name}
                             />
                         </Box>
                         <Stack spacing={8} flex={3}>
