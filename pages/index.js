@@ -8,16 +8,7 @@ import { getETHPrice } from '../lib/getETHPrice.js';
 import factory from '../smart-contract/factory';
 import Campaign from '../smart-contract/campaign';
 
-
-import {
-    Heading,
-    Container,
-    SimpleGrid,
-    Divider,
-    Skeleton,
-    SkeletonCircle,
-    HStack,
-} from '@chakra-ui/react';
+import { Heading, Container, SimpleGrid, Divider, Skeleton, SkeletonCircle, HStack } from '@chakra-ui/react';
 
 export async function getServerSideProps(context) {
     const campaigns = await factory.methods.getDeployedCampaigns().call();
@@ -68,7 +59,7 @@ export default function Home({ campaigns }) {
                     <SimpleGrid columns={4} spacing={10} py={8}>
                         {campaignList
                             .slice(0)
-                            .reverse()
+                            // .reverse()
                             .map((el, i) => {
                                 return (
                                     <div key={i}>
