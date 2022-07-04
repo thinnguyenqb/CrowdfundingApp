@@ -1,35 +1,51 @@
-import { Button } from '@chakra-ui/button';
-import { Box, Flex, Text } from '@chakra-ui/layout';
-import { Table, TableCaption, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/table';
-import { Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/tabs';
-import { SimpleGrid } from '@chakra-ui/layout';
 import NextLink from 'next/link';
 import { AiFillInfoCircle, AiOutlineLike } from 'react-icons/ai';
 import { RiTableFill } from 'react-icons/ri';
 import web3 from '../smart-contract/web3';
+import { useRouter } from "next/router";
+import { useDisclosure } from '@chakra-ui/hooks';
 import { getETHPrice, getETHPriceInUSD, getWEIPriceInUSD } from '../lib/getETHPrice';
 import {
-    Stat,
-    StatLabel,
-    StatNumber,
-    Tooltip,
-    useColorModeValue,
-    Container,
-    Skeleton,
-    Stack,
     Heading,
-    useBreakpointValue,
-    useDisclosure,
-    FormControl,
-    FormLabel,
-    Textarea,
-    InputGroup,
-    Input,
-    InputRightAddon,
-    Alert,
-    AlertIcon,
-    AlertDescription,
-    FormHelperText
+  useBreakpointValue,
+  useColorModeValue,
+  Text,
+  Button,
+  Flex,
+  Container,
+  SimpleGrid,
+  Box,
+  Spacer,
+  Table,
+  Thead,
+  Tbody,
+  Tooltip,
+  Tr,
+  Th,
+  Td,
+  TableCaption,
+  Skeleton,
+  Alert,
+  AlertIcon,
+  AlertDescription,
+  HStack,
+  Stack,
+  Tabs,
+  Tab,
+  TabList,
+  TabPanels,
+  TabPanel,
+  Stat,
+  StatLabel,
+  StatNumber,
+  Link,
+  FormControl,
+  FormLabel,
+  Textarea,
+  InputGroup,
+  Input,
+  InputRightAddon,
+  FormHelperText
 } from '@chakra-ui/react';
 import {
     Modal,
@@ -40,11 +56,14 @@ import {
     ModalHeader,
     ModalOverlay
 } from '@chakra-ui/modal';
-import { useState } from 'react';
+import {
+    InfoIcon,
+    CheckCircleIcon,
+    WarningIcon,
+  } from "@chakra-ui/icons";
+import { useState, useEffect, useRef } from 'react';
 import Campaign from '../smart-contract/campaign';
-import { useEffect } from 'react';
 import NextImage from 'next/image';
-import { useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { useWallet } from 'use-wallet';
 import { useAsync } from 'react-use';
@@ -88,6 +107,187 @@ function StatsCard(props) {
     );
 }
 
+const RequestRow = ({
+    id,
+    request,
+    approversCount,
+    campaignId,
+    disabled,
+    ETHPrice,
+  }) => {
+    const router = useRouter();
+    const readyToFinalize = request.approvalCount > approversCount / 2;
+    const [errorMessageApprove, setErrorMessageApprove] = useState();
+    const [loadingApprove, setLoadingApprove] = useState(false);
+    const [errorMessageFinalize, setErrorMessageFinalize] = useState();
+    const [loadingFinalize, setLoadingFinalize] = useState(false);
+    const onApprove = async () => {
+      setLoadingApprove(true);
+      try {
+        const campaign = Campaign(campaignId);
+        const accounts = await web3.eth.getAccounts();
+        await campaign.methods.approveRequest(id).send({
+          from: accounts[0],
+        });
+        router.reload();
+      } catch (err) {
+        setErrorMessageApprove(err.message);
+      } finally {
+        setLoadingApprove(false);
+      }
+    };
+  
+    const onFinalize = async () => {
+      setLoadingFinalize(true);
+      try {
+        const campaign = Campaign(campaignId);
+        const accounts = await web3.eth.getAccounts();
+        await campaign.methods.finalizeRequest(id).send({
+          from: accounts[0],
+        });
+        router.reload();
+      } catch (err) {
+        setErrorMessageFinalize(err.message);
+      } finally {
+        setLoadingFinalize(false);
+      }
+    };
+  
+    return (
+      <Tr
+        bg={
+          readyToFinalize && !request.complete
+            ? useColorModeValue("teal.100", "teal.700")
+            : useColorModeValue("gray.100", "gray.700")
+        }
+        opacity={request.complete ? "0.4" : "1"}
+      >
+        <Td>{id} </Td>
+        <Td>{request.description}</Td>
+        <Td isNumeric>
+          {web3.utils.fromWei(request.value, "ether")}ETH ($
+          {getWEIPriceInUSD(ETHPrice, request.value)})
+        </Td>
+        <Td>
+          <Link
+            color="teal.500"
+            href={`https://rinkeby.etherscan.io/address/${request.recipient}`}
+            isExternal
+          >
+            {" "}
+            {request.recipient.substr(0, 10) + "..."}
+          </Link>
+        </Td>
+        <Td>
+          {request.approvalCount}/{approversCount}
+        </Td>
+        <Td>
+          <HStack spacing={2}>
+            <Tooltip
+              label={errorMessageApprove}
+              bg={useColorModeValue("white", "gray.700")}
+              placement={"top"}
+              color={useColorModeValue("gray.800", "white")}
+              fontSize={"1em"}
+            >
+              <WarningIcon
+                color={useColorModeValue("red.600", "red.300")}
+                display={errorMessageApprove ? "inline-block" : "none"}
+              />
+            </Tooltip>
+            {request.complete ? (
+              <Tooltip
+                label="This Request has been finalized & withdrawn to the recipient,it may then have less no of approvers"
+                bg={useColorModeValue("white", "gray.700")}
+                placement={"top"}
+                color={useColorModeValue("gray.800", "white")}
+                fontSize={"1em"}
+              >
+                <CheckCircleIcon
+                  color={useColorModeValue("green.600", "green.300")}
+                />
+              </Tooltip>
+            ) : (
+              <Button
+                colorScheme="yellow"
+                variant="outline"
+                _hover={{
+                  bg: "yellow.600",
+                  color: "white",
+                }}
+                onClick={onApprove}
+                isDisabled={disabled || request.approvalCount == approversCount}
+                isLoading={loadingApprove}
+              >
+                Approve
+              </Button>
+            )}
+          </HStack>
+        </Td>
+        <Td>
+          <Tooltip
+            label={errorMessageFinalize}
+            bg={useColorModeValue("white", "gray.700")}
+            placement={"top"}
+            color={useColorModeValue("gray.800", "white")}
+            fontSize={"1em"}
+          >
+            <WarningIcon
+              color={useColorModeValue("red.600", "red.300")}
+              display={errorMessageFinalize ? "inline-block" : "none"}
+              mr="2"
+            />
+          </Tooltip>
+          {request.complete ? (
+            <Tooltip
+                label="This Request has been finalized & withdrawn to the recipient,it may then have less no of approvers"
+              bg={useColorModeValue("white", "gray.700")}
+              placement={"top"}
+              color={useColorModeValue("gray.800", "white")}
+              fontSize={"1em"}
+            >
+              <CheckCircleIcon
+                color={useColorModeValue("green.600", "green.300")}
+              />
+            </Tooltip>
+          ) : (
+            <HStack spacing={2}>
+              <Button
+                colorScheme="green"
+                variant="outline"
+                _hover={{
+                  bg: "green.600",
+                  color: "white",
+                }}
+                isDisabled={disabled || (!request.complete && !readyToFinalize)}
+                onClick={onFinalize}
+                isLoading={loadingFinalize}
+              >
+                Finalize
+              </Button>
+  
+              <Tooltip
+                label="This Request is ready to be Finalized because it has been approved by 50% Approvers"
+                bg={useColorModeValue("white", "gray.700")}
+                placement={"top"}
+                color={useColorModeValue("gray.800", "white")}
+                fontSize={"1.2em"}
+              >
+                <InfoIcon
+                  as="span"
+                  color={useColorModeValue("teal.800", "white")}
+                  display={
+                    readyToFinalize && !request.complete ? "inline-block" : "none"
+                  }
+                />
+              </Tooltip>
+            </HStack>
+          )}
+        </Td>
+      </Tr>
+    );
+  };
+
 export default function CampaignTab({
     id,
     campaignId,
@@ -103,6 +303,7 @@ export default function CampaignTab({
     const [isLoading, setIsLoading] = useState(true);
     const [FundNotAvailable, setFundNotAvailable] = useState(false);
     const campaign = Campaign(id);
+
     async function getRequests() {
         try {
             const requests = await Promise.all(
@@ -154,15 +355,17 @@ export default function CampaignTab({
         }
     }, []);
     async function onSubmit(data) {
-        console.log(data);
         const campaign = Campaign(id);
+        console.log(id)
         try {
             const accounts = await web3.eth.getAccounts();
             await campaign.methods
                 .createRequest(data.description, web3.utils.toWei(data.value, 'ether'), data.recipient)
                 .send({ from: accounts[0] });
 
-            router.push(`/campaign/${id}/requests`);
+            reset();
+            onClose();
+            router.push(`/campaign/${id}`);
         } catch (err) {
             setError(err.message);
             console.log(err);
@@ -183,9 +386,9 @@ export default function CampaignTab({
                 <TabPanels>
                     <TabPanel>
                         <Text>{description}</Text>
-                        <a color="teal.500" href={`https://rinkeby.etherscan.io/address/${id}`} target="_blank">
+                        <Link color="teal.500" href={`https://rinkeby.etherscan.io/address/${id}`} target="_blank">
                             View on Rinkeby Etherscan
-                        </a>
+                        </Link>
                         <SimpleGrid py={5} columns={{ base: 1 }} spacing={{ base: 5 }}>
                             <StatsCard
                                 title={'Minimum Contribution'}
@@ -222,7 +425,7 @@ export default function CampaignTab({
                         {requestsList.length > 0 ? (
                             <Container px={{ base: '4', md: '12' }} maxW={'7xl'} align={'left'}>
                                 <Flex flexDirection={{ base: 'column', lg: 'row' }} py={4}>
-                                    <Box py="2" pr="2">
+                                    {/* <Box py="2" pr="2">
                                         <Heading
                                             textAlign={useBreakpointValue({ base: 'left' })}
                                             fontFamily={'heading'}
@@ -232,7 +435,7 @@ export default function CampaignTab({
                                             maxW={'3xl'}>
                                             Withdrawal Requests for {name} Campaign
                                         </Heading>
-                                    </Box>
+                                    </Box> */}
                                     <Spacer />
                                     <Box py="2">
                                         <Button
@@ -257,7 +460,7 @@ export default function CampaignTab({
                                                 <Th>ID</Th>
                                                 <Th w="30%">Description</Th>
                                                 <Th isNumeric>Amount</Th>
-                                                <Th maxW="12%" isTruncated>
+                                                <Th maxW="12%">
                                                     Recipient Wallet Address
                                                 </Th>
                                                 <Th>Approval Count </Th>
@@ -266,7 +469,7 @@ export default function CampaignTab({
                                             </Tr>
                                         </Thead>
                                         <Tbody>
-                                            {requestsList.map((request, index) => {
+                                            {requestsList?.map((request, index) => {
                                                 return (
                                                     <RequestRow
                                                         key={index}
@@ -281,7 +484,7 @@ export default function CampaignTab({
                                             })}
                                         </Tbody>
                                         <TableCaption textAlign="left" ml="-2">
-                                            Found {requestCount} Requests
+                                            Found requestCount Requests
                                         </TableCaption>
                                     </Table>
                                 </Box>
@@ -300,7 +503,7 @@ export default function CampaignTab({
                                         <Skeleton height="5rem" />
                                     </SimpleGrid>
                                 </Container>
-                                <Container
+                                {/* <Container
                                     maxW={'lg'}
                                     align={'center'}
                                     display={requestsList.length === 0 && !isLoading ? 'block' : 'none'}>
@@ -339,7 +542,7 @@ export default function CampaignTab({
                                             Create Withdrawal Request
                                         </Button>
                                     </SimpleGrid>
-                                </Container>
+                                </Container> */}
                             </div>
                         )}
                     </TabPanel>
