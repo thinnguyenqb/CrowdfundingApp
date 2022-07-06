@@ -43,7 +43,7 @@ export default function CampaignDetail({
                             />
                         </Box>
                         <Stack spacing={8} flex={3}>
-                            <CampaignInfo balance={balance} ETHPrice={ETHPrice} target={target} />
+                            <CampaignInfo balance={balance} ETHPrice={ETHPrice} target={target}  id={id} campaignId={id}/>
                             <CampaignerCard />
                             <SupportersCard />
                         </Stack>
