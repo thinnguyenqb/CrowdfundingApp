@@ -59,7 +59,7 @@ export default function Home({ campaigns }) {
                     <SimpleGrid columns={4} spacing={10} py={8}>
                         {campaignList
                             .slice(0)
-                            .reverse()
+                            // .reverse()
                             .map((el, i) => {
                                 return (
                                     <div key={i}>

@@ -98,7 +98,6 @@ export default function Navbar() {
         }
     }, []);
     async function onSubmit(data) {
-        console.log(data.minimumContribution, data.campaignName, data.description, data.imageUrl, data.target);
         try {
             const accounts = await web3.eth.getAccounts();
             await factory.methods
@@ -115,7 +114,7 @@ export default function Navbar() {
             
                 reset();
                 onClose();
-            router.push('/');
+            router.reload();
         } catch (err) {
             setError(err.message);
             console.log(err);

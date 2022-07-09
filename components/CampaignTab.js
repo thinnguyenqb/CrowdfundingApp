@@ -71,39 +71,41 @@ import { useAsync } from 'react-use';
 function StatsCard(props) {
     const { title, stat, info } = props;
     return (
-        <Stat
-            px={{ base: 2, md: 4 }}
-            py={'5'}
-            shadow={'sm'}
-            border={'1px solid'}
-            borderColor={'gray.500'}
-            rounded={'lg'}
-            transition={'transform 0.3s ease'}
-            _hover={{
-                transform: 'translateY(-5px)'
-            }}>
-            <Tooltip
-                label={info}
-                bg={useColorModeValue('white', 'gray.700')}
-                placement={'top'}
-                color={useColorModeValue('gray.800', 'white')}
-                fontSize={'1em'}>
-                <Flex justifyContent={'space-between'}>
-                    <Box pl={{ base: 2, md: 4 }}>
-                        <StatLabel fontWeight={'medium'} isTruncated>
-                            {title}
-                        </StatLabel>
-                        <StatNumber
-                            fontSize={'base'}
-                            fontWeight={'bold'}
-                            isTruncated
-                            maxW={{ base: '	10rem', sm: 'sm' }}>
-                            {stat}
-                        </StatNumber>
-                    </Box>
-                </Flex>
-            </Tooltip>
-        </Stat>
+        <div>
+            <Stat
+                px={{ base: 2, md: 4 }}
+                py={'5'}
+                shadow={'sm'}
+                border={'1px solid'}
+                borderColor={'gray.500'}
+                rounded={'lg'}
+                transition={'transform 0.3s ease'}
+                _hover={{
+                    transform: 'translateY(-5px)'
+                }}>
+                <Tooltip
+                    label={info}
+                    bg={useColorModeValue('white', 'gray.700')}
+                    placement={'top'}
+                    color={useColorModeValue('gray.800', 'white')}
+                    fontSize={'1em'}>
+                    <Flex justifyContent={'space-between'}>
+                        <Box pl={{ base: 2, md: 4 }}>
+                            <StatLabel fontWeight={'medium'} isTruncated>
+                                {title}
+                            </StatLabel>
+                            <StatNumber
+                                fontSize={'base'}
+                                fontWeight={'bold'}
+                                isTruncated
+                                maxW={{ base: '	10rem', sm: 'sm' }}>
+                                {stat}
+                            </StatNumber>
+                        </Box>
+                    </Flex>
+                </Tooltip>
+            </Stat>
+        </div>
     );
 }
 
@@ -154,137 +156,139 @@ const RequestRow = ({
     };
   
     return (
-      <Tr
-        bg={
-          readyToFinalize && !request.complete
-            ? useColorModeValue("teal.100", "teal.700")
-            : useColorModeValue("gray.100", "gray.700")
-        }
-        opacity={request.complete ? "0.4" : "1"}
-      >
-        <Td>{id} </Td>
-        <Td>{request.description}</Td>
-        <Td isNumeric>
-          {web3.utils.fromWei(request.value, "ether")}ETH ($
-          {getWEIPriceInUSD(ETHPrice, request.value)})
-        </Td>
-        <Td>
-          <Link
-            color="teal.500"
-            href={`https://rinkeby.etherscan.io/address/${request.recipient}`}
-            isExternal
-          >
-            {" "}
-            {request.recipient.substr(0, 10) + "..."}
-          </Link>
-        </Td>
-        <Td>
-          {request.approvalCount}/{approversCount}
-        </Td>
-        <Td>
-          <HStack spacing={2}>
-            <Tooltip
-              label={errorMessageApprove}
-              bg={useColorModeValue("white", "gray.700")}
-              placement={"top"}
-              color={useColorModeValue("gray.800", "white")}
-              fontSize={"1em"}
+        <Tr
+            bg={
+            readyToFinalize && !request.complete
+                ? useColorModeValue("teal.100", "teal.700")
+                : useColorModeValue("gray.100", "gray.700")
+            }
+            opacity={request.complete ? "0.4" : "1"}
+        >
+            <Td>{id} </Td>
+            <Td>{request.description}</Td>
+            <Td isNumeric>
+            {web3.utils.fromWei(request.value, "ether")}ETH ($
+            {getWEIPriceInUSD(ETHPrice, request.value)})
+            </Td>
+            <Td>
+            <Link
+                color="teal.500"
+                href={`https://rinkeby.etherscan.io/address/${request.recipient}`}
+                isExternal
             >
-              <WarningIcon
-                color={useColorModeValue("red.600", "red.300")}
-                display={errorMessageApprove ? "inline-block" : "none"}
-              />
-            </Tooltip>
-            {request.complete ? (
-              <Tooltip
-                label="This Request has been finalized & withdrawn to the recipient,it may then have less no of approvers"
+                {" "}
+                {request.recipient.substr(0, 10) + "..."}
+            </Link>
+            </Td>
+            <Td>
+            {request.approvalCount}/{approversCount}
+            </Td>
+            <Td>
+            <HStack spacing={2}>
+                <Tooltip
+                label={errorMessageApprove}
                 bg={useColorModeValue("white", "gray.700")}
                 placement={"top"}
                 color={useColorModeValue("gray.800", "white")}
                 fontSize={"1em"}
-              >
-                <CheckCircleIcon
-                  color={useColorModeValue("green.600", "green.300")}
+                >
+                <WarningIcon
+                    color={useColorModeValue("red.600", "red.300")}
+                    display={errorMessageApprove ? "inline-block" : "none"}
                 />
-              </Tooltip>
-            ) : (
-              <Button
-                colorScheme="yellow"
-                variant="outline"
-                _hover={{
-                  bg: "yellow.600",
-                  color: "white",
-                }}
-                onClick={onApprove}
-                isDisabled={disabled || request.approvalCount == approversCount}
-                isLoading={loadingApprove}
-              >
-                Approve
-              </Button>
-            )}
-          </HStack>
-        </Td>
-        <Td>
-          <Tooltip
-            label={errorMessageFinalize}
-            bg={useColorModeValue("white", "gray.700")}
-            placement={"top"}
-            color={useColorModeValue("gray.800", "white")}
-            fontSize={"1em"}
-          >
-            <WarningIcon
-              color={useColorModeValue("red.600", "red.300")}
-              display={errorMessageFinalize ? "inline-block" : "none"}
-              mr="2"
-            />
-          </Tooltip>
-          {request.complete ? (
-            <Tooltip
-                label="This Request has been finalized & withdrawn to the recipient,it may then have less no of approvers"
-              bg={useColorModeValue("white", "gray.700")}
-              placement={"top"}
-              color={useColorModeValue("gray.800", "white")}
-              fontSize={"1em"}
-            >
-              <CheckCircleIcon
-                color={useColorModeValue("green.600", "green.300")}
-              />
-            </Tooltip>
-          ) : (
-            <HStack spacing={2}>
-              <Button
-                colorScheme="green"
-                variant="outline"
-                _hover={{
-                  bg: "green.600",
-                  color: "white",
-                }}
-                isDisabled={disabled || (!request.complete && !readyToFinalize)}
-                onClick={onFinalize}
-                isLoading={loadingFinalize}
-              >
-                Finalize
-              </Button>
-  
-              <Tooltip
-                label="This Request is ready to be Finalized because it has been approved by 50% Approvers"
-                bg={useColorModeValue("white", "gray.700")}
-                placement={"top"}
-                color={useColorModeValue("gray.800", "white")}
-                fontSize={"1.2em"}
-              >
-                <InfoIcon
-                  as="span"
-                  color={useColorModeValue("teal.800", "white")}
-                  display={
-                    readyToFinalize && !request.complete ? "inline-block" : "none"
-                  }
-                />
-              </Tooltip>
+                </Tooltip>
+                {request.complete ? (
+                <Tooltip
+                    label="This Request has been finalized & withdrawn to the recipient,it may then have less no of approvers"
+                    bg={useColorModeValue("white", "gray.700")}
+                    placement={"top"}
+                    color={useColorModeValue("gray.800", "white")}
+                    fontSize={"1em"}
+                >
+                    <CheckCircleIcon
+                    color={useColorModeValue("green.600", "green.300")}
+                    />
+                </Tooltip>
+                ) : (
+                    <div>
+                        <Button
+                            colorScheme="yellow"
+                            variant="outline"
+                            _hover={{
+                            bg: "yellow.600",
+                            color: "white",
+                            }}
+                            onClick={onApprove}
+                            isDisabled={disabled || request.approvalCount == approversCount}
+                            isLoading={loadingApprove}
+                        >
+                            Approve
+                        </Button>
+                    </div>
+                )}
             </HStack>
-          )}
-        </Td>
-      </Tr>
+            </Td>
+            <Td>
+                <Tooltip
+                    label={errorMessageFinalize}
+                    bg={useColorModeValue("white", "gray.700")}
+                    placement={"top"}
+                    color={useColorModeValue("gray.800", "white")}
+                    fontSize={"1em"}
+                >
+                    <WarningIcon
+                    color={useColorModeValue("red.600", "red.300")}
+                    display={errorMessageFinalize ? "inline-block" : "none"}
+                    mr="2"
+                    />
+                </Tooltip>
+                {request.complete ? (
+                    <Tooltip
+                        label="This Request has been finalized & withdrawn to the recipient,it may then have less no of approvers"
+                    bg={useColorModeValue("white", "gray.700")}
+                    placement={"top"}
+                    color={useColorModeValue("gray.800", "white")}
+                    fontSize={"1em"}
+                    >
+                    <CheckCircleIcon
+                        color={useColorModeValue("green.600", "green.300")}
+                    />
+                    </Tooltip>
+                ) : (
+                    <HStack spacing={2}>
+                    <Button
+                        colorScheme="green"
+                        variant="outline"
+                        _hover={{
+                        bg: "green.600",
+                        color: "white",
+                        }}
+                        isDisabled={disabled || (!request.complete && !readyToFinalize)}
+                        onClick={onFinalize}
+                        isLoading={loadingFinalize}
+                    >
+                        Finalize
+                    </Button>
+        
+                    <Tooltip
+                        label="This Request is ready to be Finalized because it has been approved by 50% Approvers"
+                        bg={useColorModeValue("white", "gray.700")}
+                        placement={"top"}
+                        color={useColorModeValue("gray.800", "white")}
+                        fontSize={"1.2em"}
+                    >
+                        <InfoIcon
+                        as="span"
+                        color={useColorModeValue("teal.800", "white")}
+                        display={
+                            readyToFinalize && !request.complete ? "inline-block" : "none"
+                        }
+                        />
+                    </Tooltip>
+                    </HStack>
+                )}
+            </Td>
+        </Tr>
     );
   };
 
@@ -297,7 +301,8 @@ export default function CampaignTab({
     requestsCount,
     approversCount,
     manager,
-    name
+    name,
+    balance
 }) {
     const [requestsList, setRequestsList] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -324,9 +329,9 @@ export default function CampaignTab({
     }
 
     useEffect(() => {
-        // if (balance == 0) {
-        setFundNotAvailable(true);
-        // }
+        if (balance == 0) {
+           setFundNotAvailable(true);
+        }
         getRequests();
     }, []);
 
@@ -356,7 +361,6 @@ export default function CampaignTab({
     }, []);
     async function onSubmit(data) {
         const campaign = Campaign(id);
-        console.log(id)
         try {
             const accounts = await web3.eth.getAccounts();
             await campaign.methods
@@ -389,54 +393,54 @@ export default function CampaignTab({
                         <Link color="teal.500" href={`https://rinkeby.etherscan.io/address/${id}`} target="_blank">
                             View on Rinkeby Etherscan
                         </Link>
-                        <SimpleGrid py={5} columns={{ base: 1 }} spacing={{ base: 5 }}>
-                            <StatsCard
-                                title={'Minimum Contribution'}
-                                stat={`${web3.utils.fromWei(minimumContribution, 'ether')} ETH ($${getWEIPriceInUSD(
-                                    ETHPrice,
-                                    minimumContribution
-                                )})`}
-                                info={
-                                    'You must contribute at least this much in Wei ( 1 ETH = 10 ^ 18 Wei) to become an approver'
-                                }
-                            />
-                            <StatsCard
-                                title={'Wallet Address of Campaign Creator'}
-                                stat={manager}
-                                info={
-                                    'The Campaign Creator created the campaign and can create requests to withdraw money.'
-                                }
-                            />
-                            <StatsCard
-                                title={'Number of Requests'}
-                                stat={requestsCount}
-                                info={
-                                    'A request tries to withdraw money from the contract. Requests must be approved by approvers'
-                                }
-                            />
-                            <StatsCard
-                                title={'Number of Approvers'}
-                                stat={approversCount}
-                                info={'Number of people who have already donated to this campaign'}
-                            />
+                        <SimpleGrid py={5} columns={{ base: 1  }} spacing={{ base: 3 }}>
+                            <Box w='full'>
+                                <StatsCard
+                                    w={'200px'}
+                                    title={'Wallet Address of Campaign Creator'}
+                                    stat={manager}
+                                    info={
+                                        'The Campaign Creator created the campaign and can create requests to withdraw money.'
+                                    }
+                                />
+                            </Box>
+                             <Flex spacing={{ base: 3 }}>
+                                <Box w={'full'} mr={"10px"}>
+                                    <StatsCard
+                                        title={'Minimum Contribution'}
+                                        stat={`${web3.utils.fromWei(minimumContribution, 'ether')} ETH ($${getWEIPriceInUSD(
+                                            ETHPrice,
+                                            minimumContribution
+                                        )})`}
+                                        info={
+                                            'You must contribute at least this much in Wei ( 1 ETH = 10 ^ 18 Wei) to become an approver'
+                                        }
+                                    />
+                                </Box>
+                                <Box w={'full'} mr={"10px"}>
+                                    <StatsCard
+                                        title={'Number of Requests'}
+                                        stat={requestsCount}
+                                        info={
+                                            'A request tries to withdraw money from the contract. Requests must be approved by approvers'
+                                        }
+                                    />
+                                </Box>
+                                
+                                <Box w={'full'}>
+                                    <StatsCard
+                                        title={'Number of Approvers'}
+                                        stat={approversCount}
+                                        info={'Number of people who have already donated to this campaign'}
+                                    />
+                                </Box>
+                            </Flex>
                         </SimpleGrid>
                     </TabPanel>
                     <TabPanel>
                         {requestsList.length > 0 ? (
-                            <Container px={{ base: '4', md: '12' }} maxW={'7xl'} align={'left'}>
+                            <Container px={{ base: '4', md: '0' }} maxW={'7xl'} align={'left'}>
                                 <Flex flexDirection={{ base: 'column', lg: 'row' }} py={4}>
-                                    {/* <Box py="2" pr="2">
-                                        <Heading
-                                            textAlign={useBreakpointValue({ base: 'left' })}
-                                            fontFamily={'heading'}
-                                            color={useColorModeValue('gray.800', 'white')}
-                                            as="h3"
-                                            isTruncated
-                                            maxW={'3xl'}>
-                                            Withdrawal Requests for {name} Campaign
-                                        </Heading>
-                                    </Box> */}
-                                    <Spacer />
                                     <Box py="2">
                                         <Button
                                             display={{ sm: 'inline-flex' }}
@@ -484,7 +488,7 @@ export default function CampaignTab({
                                             })}
                                         </Tbody>
                                         <TableCaption textAlign="left" ml="-2">
-                                            Found requestCount Requests
+                                            Found {requestsList.length} Requests
                                         </TableCaption>
                                     </Table>
                                 </Box>
@@ -503,8 +507,8 @@ export default function CampaignTab({
                                         <Skeleton height="5rem" />
                                     </SimpleGrid>
                                 </Container>
-                                {/* <Container
-                                    maxW={'lg'}
+                                <Container
+                                    maxW={'lg'}d
                                     align={'center'}
                                     display={requestsList.length === 0 && !isLoading ? 'block' : 'none'}>
                                     <SimpleGrid row spacing={2} align="center">
@@ -523,13 +527,6 @@ export default function CampaignTab({
                                             size="md">
                                             No Requests yet for {name} Campaign
                                         </Heading>
-                                        <Text
-                                            textAlign={useBreakpointValue({ base: 'center' })}
-                                            color={useColorModeValue('gray.600', 'gray.300')}
-                                            fontSize="sm">
-                                            Create a Withdrawal Request to Withdraw funds from the Campaign😄
-                                        </Text>
-
                                         <Button
                                             onClick={onOpen}
                                             fontSize={'md'}
@@ -542,7 +539,7 @@ export default function CampaignTab({
                                             Create Withdrawal Request
                                         </Button>
                                     </SimpleGrid>
-                                </Container> */}
+                                </Container>
                             </div>
                         )}
                     </TabPanel>

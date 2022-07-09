@@ -98,20 +98,10 @@ export default function CampaignCard({ name, description, creatorId, imageURL, i
                         <Box w="full">
                             <Box fontSize={'xl'} isTruncated maxW={{ base: '	15rem', sm: 'sm' }} pt="2">
                                 <Text as="span" fontWeight={'bold'} noOfLines={1}>
-                                    {balance > 0 ? web3.utils.fromWei(balance, 'ether') : '0, Become a Donor 😄'}
+                                    {balance > 0 ? `${web3.utils.fromWei(balance, 'ether')} ETH ($${getWEIPriceInUSD(ethPrice, balance)})` : '0, Become a Donor 😄'}
                                 </Text>
-                                <Text as="span" display={balance > 0 ? 'inline' : 'none'} pr={2} fontWeight={'bold'}>
-                                    {' '}
-                                    ETH
-                                </Text>
-                                <Text
-                                    as="span"
-                                    fontSize="lg"
-                                    display={balance > 0 ? 'inline' : 'none'}
-                                    fontWeight={'normal'}
-                                    color={useColorModeValue('gray.500', 'gray.200')}>
-                                    (${getWEIPriceInUSD(ethPrice, balance)})
-                                </Text>
+                                
+                                
                             </Box>
 
                             <Text fontSize={'md'} fontWeight="normal">
