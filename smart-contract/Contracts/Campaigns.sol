@@ -1,8 +1,11 @@
 pragma solidity ^0.4.17;
 
 contract CampaignFactory {
+    // ==== Fields ====
     address[] public deployedCampaigns;
 
+    // ==== Modifier ====
+    // ==== create a new contract ====
     function createCampaign(
         uint256 minimum,
         string name,
@@ -14,12 +17,14 @@ contract CampaignFactory {
         deployedCampaigns.push(newCampaign);
     }
 
+    // ==== returning all the address of the deployed contract
     function getDeployedCampaigns() public view returns (address[]) {
         return deployedCampaigns;
     }
 }
 
 contract Campaign {
+    // collection of key value pairs
     struct Request {
         string description;
         uint256 value;
@@ -29,6 +34,7 @@ contract Campaign {
         mapping(address => bool) approvals;
     }
 
+    // === Fields ===
     Request[] public requests;
     address public manager;
     uint256 public minimunContribution;
@@ -40,11 +46,15 @@ contract Campaign {
     mapping(address => bool) public approvers;
     uint256 public approversCount;
 
+    // === Methods ===
+    
+    // == Modifier ==
     modifier restricted() {
         require(msg.sender == manager);
         _;
     }
-
+    // == constructor ==
+    //Setting the manager and minimum amount to contribute
     function Campaign(
         uint256 minimun,
         address creator,
@@ -61,6 +71,7 @@ contract Campaign {
         targetToAchieve = target;
     }
 
+    //donate money to compaign and became an approver
     function contibute() public payable {
         require(msg.value >= minimunContribution);
 
@@ -71,6 +82,7 @@ contract Campaign {
         }
     }
 
+    //creating a new request by the manager
     function createRequest(
         string description,
         uint256 value,
@@ -87,6 +99,7 @@ contract Campaign {
         requests.push(newRequest);
     }
 
+    //approving a particular request by the user
     function approveRequest(uint256 index) public {
          Request storage request = requests[index];
         
@@ -98,6 +111,7 @@ contract Campaign {
         request.approvalCount++;
     }
 
+    //final approval of request by the manager and sending the amount
     function finalizeRequest(uint256 index) public restricted {
         require(requests[index].approvalCount > (approversCount / 2));
         require(!requests[index].complete);
@@ -106,6 +120,7 @@ contract Campaign {
         requests[index].complete = true;
     }
 
+    // function to retrieve Campaign balance, minimumContribution , no of requests , no of Contributors and manager address
     function getSummary()
         public
         view
@@ -134,6 +149,7 @@ contract Campaign {
         );
     }
 
+    // returing no of requests
     function getRequestsCount() public view returns (uint256) {
         return requests.length;
     }

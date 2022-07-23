@@ -369,7 +369,7 @@ export default function CampaignTab({
 
             reset();
             onClose();
-            router.push(`/campaign/${id}`);
+            router.reload();
         } catch (err) {
             setError(err.message);
             console.log(err);

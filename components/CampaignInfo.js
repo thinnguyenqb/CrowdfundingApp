@@ -123,7 +123,7 @@ export default function CampaignInfo({ balance, ETHPrice, target, campaignId, id
                 <Flex>
                     <Text fontSize="md">
                         <Text as="span" fontSize="1.3rem" fontWeight="bold">
-                            78
+                            0
                         </Text>{' '}
                         days left
                     </Text>
